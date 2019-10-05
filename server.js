@@ -9,10 +9,10 @@ const socket = require('socket.io')(server, {
     path: '/socket.io'
 })
 
-socket.on('CreateRoom', (name) => {
+socket.on('CreateRoom', (data) => {
     let player = new Player(
         {
-            name: name,
+            name: data.nome,
             lifePoints: 100
         }
     ).save((err) => {
@@ -35,8 +35,8 @@ socket.on('CreateRoom', (name) => {
     })
 })
 
-socket.on('JoinRoom', (name, id) => {
-    query = Lobby.where({ _id: id }).findOne((err, lobby) => {
+socket.on('JoinRoom', (data) => {
+    query = Lobby.where({ _id: data.id }).findOne((err, lobby) => {
         if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
         else {
             if (lobby.playersData.length >= 4) {
@@ -44,7 +44,7 @@ socket.on('JoinRoom', (name, id) => {
             } else {
                 let player = new Player(
                     {
-                        name: name,
+                        name: data.nome,
                         lifePoints: 100
                     }
                 ).save((err) => {
