@@ -13,18 +13,15 @@ socket.on('CreateRoom', (name) => {
     let player = new Player(
         {
             name: name,
-            lifePoints: 100,
-            userID: 1
+            lifePoints: 100
         }
     ).save((err) => {
         if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
         else {
             socket.emit('InfoUser', player)
-            let lobbyID = crypto.createHash('sha1').update(Date.now()).digest('hex')
             let lobby = new Lobby(
                 {
                     players: 1,
-                    id: lobbyID,
                     playersData: [player],
                     host: player
                 }
@@ -34,6 +31,34 @@ socket.on('CreateRoom', (name) => {
                     socket.emit('InfoLobby', lobby)
                 }
             })
+        }
+    })
+})
+
+socket.on('JoinRoom', (name, id) => {
+    query = Lobby.where({ _id: id }).findOne((err, lobby) => {
+        if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to enter on lobby')
+        else {
+            if (lobby.playersData.length >= 4) {
+                socket.emit('ErrorLobby', 'Sorry, but the lobby is full of players')
+            } else {
+                let player = new Player(
+                    {
+                        name: name,
+                        lifePoints: 100
+                    }
+                ).save((err) => {
+                    if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
+                    else {
+                        lobby.playersData.push(player).save((err) => {
+                            if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
+                            else {
+                                socket.emit('SuccessEnteringLobby', {})
+                            }
+                        })
+                    }
+                })
+            }
         }
     })
 })
