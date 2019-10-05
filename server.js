@@ -16,7 +16,7 @@ socket.on('CreateRoom', (name) => {
             lifePoints: 100
         }
     ).save((err) => {
-        if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
+        if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
         else {
             socket.emit('InfoUser', player)
             let lobby = new Lobby(
@@ -26,7 +26,7 @@ socket.on('CreateRoom', (name) => {
                     host: player
                 }
             ).save((err) => {
-                if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
+                if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                 else {
                     socket.emit('InfoLobby', lobby)
                 }
@@ -37,10 +37,10 @@ socket.on('CreateRoom', (name) => {
 
 socket.on('JoinRoom', (name, id) => {
     query = Lobby.where({ _id: id }).findOne((err, lobby) => {
-        if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to enter on lobby')
+        if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
         else {
             if (lobby.playersData.length >= 4) {
-                socket.emit('ErrorLobby', 'Sorry, but the lobby is full of players')
+                socket.emit('ErrorLobby',  { 'error': 'Sorry, but the lobby is full of players' })
             } else {
                 let player = new Player(
                     {
@@ -48,10 +48,10 @@ socket.on('JoinRoom', (name, id) => {
                         lifePoints: 100
                     }
                 ).save((err) => {
-                    if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
+                    if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                     else {
                         lobby.playersData.push(player).save((err) => {
-                            if (err) socket.emit('ErrorLobby', 'Sorry, it wasn´t possible to create a lobby')
+                            if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
                                 socket.emit('SuccessEnteringLobby', {})
                             }
