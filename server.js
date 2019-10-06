@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
                                 socket.join(`${lobby._id}`)
-                                socket.to(`${lobby._id}`).emit('InfoLobby', lobby)
+                                io.in(`${lobby._id}`).emit('InfoLobby', lobby)
                             }
                         }
                     )
@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
                                 if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                                 else {
                                     socket.join(`${lobby._id}`)
-                                    socket.to(`${lobby._id}`).emit('InfoLobby', lobby)
+                                    io.in(`${lobby._id}`).emit('InfoLobby', lobby)
                                     socket.emit('InfoLobby', lobby)
                                 }
                             })
