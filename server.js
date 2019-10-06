@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('AdicionarItem', (data) => {
-        let match = data.match
+        console.log(data)
         Item.create({
             ...data.item
         }, (err, item) => {
@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
                 Player.updateOne({ _id: data.player._id },  { $push: { items: item }}, (err) => {
                     if (err) socket.emit('ErrorItem', { 'error': 'Wasn´t possible to push the card in your hand' })
                     else {
-                        Match.findOne({ _id: match._id }, (err, match) => {
+                        Match.findOne({ _id: data.match._id }, (err, match) => {
                             if(err) console.log(err)
                             else {
                                 io.in(`${match.room}`).emit('MatchInfo', match)
