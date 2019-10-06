@@ -27,7 +27,8 @@ io.on('connection', (socket) => {
                         }, (err, lobby) => {
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
-                                socket.emit('InfoLobby', lobby)
+                                socket.join(`${lobby._id}`)
+                                socket.to(`${lobby._id}`).emit('InfoLobby', lobby)
                             }
                         }
                     )
@@ -54,6 +55,8 @@ io.on('connection', (socket) => {
                             lobby.playersData.push(player).save((err) => {
                                 if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                                 else {
+                                    socket.join(`${lobby._id}`)
+                                    socket.to(`${lobby._id}`).emit('InfoLobby', lobby)
                                     socket.emit('InfoLobby', lobby)
                                 }
                             })
