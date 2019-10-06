@@ -42,6 +42,10 @@ const Action = mongoose.model('Action', new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Item'
     },
+    itemTarget: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Item'
+    },
     actionType: String
 }))
 

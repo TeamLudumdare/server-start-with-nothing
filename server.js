@@ -139,23 +139,20 @@ io.on('connection', (socket) => {
                                         if (err) console.log(err)
                                         else {
                                             turn.actions.push(action)
-                                            await turn.save()
+                                            turn.save()
                                             console.log(turn)
                                             if (turn.actions.length == 2) {
                                                 turn.turn += 1
-                                                await turn.save()
-                                            }
-                                            // Pega os players vivos
-                                            let players = match.players.filter(p => p.alive)
-                                            // Comece a próxima rodada
-                                            if (turn.turn >= players.length) {
-                                                // TODO: Funcão que manda o log
-                                                let actions = []
-                                                round.turns.sort('turn').forEach(turn => turn.actions.forEach(action => {
-                                                    turn.player.items.find({
-                                                        _id: action._id
-                                                    })
-                                                }))
+                                                turn.save()
+                                                // Pega os players vivos
+                                                let players = match.players.filter(p => p.alive)
+                                                // Comece a próxima rodada
+                                                if (turn.turn >= players.length) {
+                                                    // TODO: Funcão que manda o log
+                                                    let actions = []
+                                                }
+                                            } else {
+                                                socket.emit('InfoAction', turn.actions)
                                             }
                                         }
                                     })
