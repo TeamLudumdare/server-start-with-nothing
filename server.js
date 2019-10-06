@@ -41,7 +41,6 @@ io.on('connection', (socket) => {
         Lobby.where({ _id: data._id }).findOne((err, lobby) => {
             if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
             else {
-                let host = lobby.host
                 if (lobby.players >= 4) {
                     socket.emit('ErrorLobby',  { 'error': 'Sorry, but the lobby is full of players' })
                 } else {
@@ -53,7 +52,6 @@ io.on('connection', (socket) => {
                             socket.emit('InfoUser', player)
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
-                                lobby.host = host
                                 lobby.players ++
                                 lobby.playersData.push(player)
                                 lobby.save((err) => {
