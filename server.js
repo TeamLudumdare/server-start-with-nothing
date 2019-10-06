@@ -1,7 +1,7 @@
 const server = require('http').createServer()
 const mongoose = require('mongoose')
 const crypto = require('crypto')
-const { Player, Lobby, Action, Match, Item } = require('./models')
+const { Player, Lobby, Action, Match, Item, RoundLog } = require('./models')
 
 mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useUnifiedTopology: true})
 
@@ -150,6 +150,12 @@ io.on('connection', (socket) => {
                                             // Comece a próxima rodada
                                             if (turn.turn >= players.length) {
                                                 // TODO: Funcão que manda o log
+                                                let actions = []
+                                                round.turns.sort('turn').forEach(turn => turn.actions.forEach(action => {
+                                                    turn.player.items.find({
+                                                        _id: action._id
+                                                    })
+                                                }))
                                             }
                                         }
                                     })
