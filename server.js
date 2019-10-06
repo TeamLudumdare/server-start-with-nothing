@@ -13,15 +13,13 @@ io.on('connection', (socket) => {
     socket.on('CreateRoom', (data) => {
         Player.create(
             {
-                name: data.nome,
-                lifePoints: 100
+                name: data.nome
             }, (err, player) => {
                 if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                 else {
                     socket.emit('InfoUser', player)
                     Lobby.create(
                         {
-                            players: 1,
                             playersData: [player],
                             host: player
                         }, (err, lobby) => {
@@ -46,8 +44,7 @@ io.on('connection', (socket) => {
                 } else {
                     Player.create(
                         {
-                            name: data.nome,
-                            lifePoints: 100
+                            name: data.nome
                         }, (err, player) => {
                             socket.emit('InfoUser', player)
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })

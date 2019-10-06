@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
 
 const Player = mongoose.model('Player', new mongoose.Schema({
-    lifePoints: Number,
-    name: String
+    lifePoints: { type: Number, default: 100 },
+    name: String,
+    alive: { type: Boolean, default: true }
 }))
 
 const Lobby = mongoose.model('Lobby', new mongoose.Schema({
-    players: Number,
+    players: { type: Number, default: 1 },
     playersData: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Player'
