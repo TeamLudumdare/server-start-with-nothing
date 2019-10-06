@@ -120,6 +120,48 @@ io.on('connection', (socket) => {
             }
         })
     })
+
+    socket.on('UsarAcao', (data) => {
+        Match.where({ _id: data.match._id }).findOne((err, match) => {
+            if (err) console.log(err)
+            else {
+                match.rounds.sort('-round').findOne((err, round) => {
+                    if (err) console.log(err)
+                    else {
+                        round.turns.sort('-turn').findOne((err, turn) => {
+                            if (err) console.log(err)
+                            else {
+                                if (!turn.player._id === data.player._id) socket.emit('ErrorActing', { 'error': 'You are using an action in the wrong turn' })
+                                else {
+                                    Action.create({
+                                        ...data.action
+                                    }, (err, action) => {
+                                        if (err) console.log(err)
+                                        else {
+                                            turn.actions.push(action)
+                                            await turn.save()
+                                            console.log(turn)
+                                            if (turn.actions.length == 2) {
+                                                turn.turn += 1
+                                                await turn.save()
+                                            }
+                                            // Pega os players vivos
+                                            let players = match.players.filter(p => p.alive)
+                                            // Comece a próxima rodada
+                                            if (turn.turn >= players.length) {
+                                                // TODO: Funcão que manda o log
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    })
+
 })
 
 server.listen(3000)
