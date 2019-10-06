@@ -38,30 +38,34 @@ io.on('connection', (socket) => {
     })
     
     socket.on('JoinRoom', (data) => {
-        query = Lobby.where({ _id: data._id }).findOne((err, lobby) => {
+        Lobby.where({ _id: data._id }).findOne((err, lobby) => {
             if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
             else {
-                if (lobby.playersData.length >= 4) {
+                let host = lobby.host
+                if (lobby.players >= 4) {
                     socket.emit('ErrorLobby',  { 'error': 'Sorry, but the lobby is full of players' })
                 } else {
                     Player.create(
                         {
                             name: data.nome,
                             lifePoints: 100
+                        }, (err, player) => {
+                            socket.emit('InfoUser', player)
+                            if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
+                            else {
+                                lobby.host = host
+                                lobby.players ++
+                                lobby.playersData.push(player)
+                                lobby.save((err) => {
+                                    if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
+                                    else {
+                                        socket.join(`${lobby._id}`)
+                                        io.in(`${lobby._id}`).emit('InfoLobby', lobby)
+                                    }
+                                })
+                            }
                         }
-                    ), (err, player) => {
-                        if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
-                        else {
-                            lobby.playersData.push(player).save((err) => {
-                                if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
-                                else {
-                                    socket.join(`${lobby._id}`)
-                                    io.in(`${lobby._id}`).emit('InfoLobby', lobby)
-                                    socket.emit('InfoLobby', lobby)
-                                }
-                            })
-                        }
-                    }
+                    )
                 }
             }
         })
