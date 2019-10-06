@@ -27,8 +27,8 @@ io.on('connection', (socket) => {
                         }, (err, lobby) => {
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
-                                socket.join(`lobby-${lobby._id}`)
-                                io.in(`lobby-${lobby._id}`).emit('InfoLobby', lobby)
+                                socket.join(`${lobby._id}`)
+                                io.in(`${lobby._id}`).emit('InfoLobby', lobby)
                             }
                         }
                     )
@@ -59,8 +59,8 @@ io.on('connection', (socket) => {
                                 lobby.save((err) => {
                                     if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                                     else {
-                                        socket.join(`lobby-${lobby._id}`)
-                                        io.in(`lobby-${lobby._id}`).emit('InfoLobby', lobby)
+                                        socket.join(`${lobby._id}`)
+                                        io.in(`${lobby._id}`).emit('InfoLobby', lobby)
                                     }
                                 })
                             }
@@ -80,6 +80,7 @@ io.on('connection', (socket) => {
                 Match.create(
                     {
                         players: lobby.playersData,
+                        room: `${lobby._id}`,
                         rounds: [{
                             round: 1,
                             turns: [{
@@ -90,10 +91,7 @@ io.on('connection', (socket) => {
                     }, (err, match) => {
                         if (err) socket.emit('ErrorStarting', { 'error': 'Error when you tried to start game!'})
                         else {
-                            io.sockets.clients(`lobby-${lobby._id}`).forEach((client) => {
-                                client.join(`match-${match._id}`)
-                            })
-                            io.in(`match-${match._id}`).emit('MatchInfo', match)
+                            io.in(`${match.room}`).emit('MatchInfo', match)
                         }
                     }
                 )
