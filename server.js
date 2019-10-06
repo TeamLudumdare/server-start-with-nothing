@@ -81,8 +81,20 @@ io.on('connection', (socket) => {
                     {
                         players: lobby.playersData,
                         round: [{
-                            round: 1
+                            round: 1,
+                            turns: [{
+                                turn: 0,
+                                player: lobby.playersData[0]
+                            }]
                         }]
+                    }, (err, match) => {
+                        if (err) socket.emit('ErrorStarting', { 'error': 'Error when you tried to start game!'})
+                        else {
+                            io.sockets.clients(`lobby-${lobby._id}`).forEach((client) => {
+                                client.join(`match-${match._id}`)
+                            })
+                            io.in(`match-${match._id}`).emit('MatchInfo', match)
+                        }
                     }
                 )
             }

@@ -38,6 +38,7 @@ const Match = mongoose.model('Match', new mongoose.Schema({
     round: [{
         round: Number,
         turns: [{
+            turn: Number,
             player: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'Player'
