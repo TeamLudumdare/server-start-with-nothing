@@ -70,6 +70,17 @@ io.on('connection', (socket) => {
             }
         })
     })
+
+    socket.on('StartGame', (data) => {
+        Lobby.where({ _id: data._id }).findOne((err, lobby) => {
+            if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to start the game' })
+            else if (lobby.players < 4) {
+                socket.emit('ErrorLobby', { 'error': 'Sorry, theresn´t enough players to start the game' })
+            } else {
+                
+            }
+        })
+    })
 })
 
 server.listen(3000)
