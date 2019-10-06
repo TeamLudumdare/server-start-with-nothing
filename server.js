@@ -19,18 +19,18 @@ io.on('connection', (socket) => {
                 if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                 else {
                     socket.emit('InfoUser', player)
-                    let lobby = new Lobby(
+                    Lobby.create(
                         {
                             players: 1,
                             playersData: [player],
                             host: player
+                        }, (err, lobby) => {
+                            if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
+                            else {
+                                socket.emit('InfoLobby', lobby)
+                            }
                         }
-                    ).save((err) => {
-                        if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
-                        else {
-                            socket.emit('InfoLobby', lobby)
-                        }
-                    })
+                    )
                 }
             }
         )
@@ -43,12 +43,12 @@ io.on('connection', (socket) => {
                 if (lobby.playersData.length >= 4) {
                     socket.emit('ErrorLobby',  { 'error': 'Sorry, but the lobby is full of players' })
                 } else {
-                    let player = new Player(
+                    Player.create(
                         {
                             name: data.nome,
                             lifePoints: 100
                         }
-                    ).save((err) => {
+                    ).save((err, player) => {
                         if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                         else {
                             lobby.playersData.push(player).save((err) => {
