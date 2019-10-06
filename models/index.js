@@ -26,6 +26,7 @@ const Action = mongoose.model('Action', new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Player'
     },
+    targetAll: Boolean,
     actionType: String
 }))
 
@@ -36,9 +37,16 @@ const Match = mongoose.model('Match', new mongoose.Schema({
     }],
     round: [{
         round: Number,
-        actions: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Action'
+        turns: [{
+            turn: Number,
+            player: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Player'
+            },
+            actions: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Action'
+            }]
         }]
     }]
 }))
