@@ -1,6 +1,6 @@
 const server = require('http').createServer()
 const mongoose = require('mongoose')
-const { Player, Lobby } = require('./models')
+const { Player, Lobby, Action, Match } = require('./models')
 
 mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useUnifiedTopology: true})
 
@@ -27,8 +27,8 @@ io.on('connection', (socket) => {
                         }, (err, lobby) => {
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
-                                socket.join(`${lobby._id}`)
-                                io.in(`${lobby._id}`).emit('InfoLobby', lobby)
+                                socket.join(`lobby-${lobby._id}`)
+                                io.in(`lobby-${lobby._id}`).emit('InfoLobby', lobby)
                             }
                         }
                     )
@@ -59,8 +59,8 @@ io.on('connection', (socket) => {
                                 lobby.save((err) => {
                                     if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                                     else {
-                                        socket.join(`${lobby._id}`)
-                                        io.in(`${lobby._id}`).emit('InfoLobby', lobby)
+                                        socket.join(`lobby-${lobby._id}`)
+                                        io.in(`lobby-${lobby._id}`).emit('InfoLobby', lobby)
                                     }
                                 })
                             }
@@ -77,7 +77,14 @@ io.on('connection', (socket) => {
             else if (lobby.players < 4) {
                 socket.emit('ErrorLobby', { 'error': 'Sorry, theresn´t enough players to start the game' })
             } else {
-                
+                Match.create(
+                    {
+                        players: lobby.playersData,
+                        round: [{
+                            round: 1
+                        }]
+                    }
+                )
             }
         })
     })
