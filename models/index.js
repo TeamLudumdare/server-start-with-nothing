@@ -17,6 +17,7 @@ const Player = mongoose.model('Player', new mongoose.Schema({
 
 const Lobby = mongoose.model('Lobby', new mongoose.Schema({
     players: { type: Number, default: 1 },
+    room: String,
     playersData: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Player'
