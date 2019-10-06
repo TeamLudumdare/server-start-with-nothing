@@ -1,6 +1,6 @@
 const server = require('http').createServer()
 const mongoose = require('mongoose')
-const { Player, Lobby, Action, Match } = require('./models')
+const { Player, Lobby, Action, Match, Item } = require('./models')
 
 mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useUnifiedTopology: true})
 
@@ -90,6 +90,28 @@ io.on('connection', (socket) => {
                         }
                     }
                 )
+            }
+        })
+    })
+
+    socket.on('AdicionarItem', (data) => {
+        let match = data.match
+        Item.create({
+            ...data.item
+        }, (err, item) => {
+            if (err) socket.emit('ErrorItem', { 'error': 'Wasn´t possible to push the card in your hand' })
+            else {
+                Player.updateOne({ _id: data.player._id },  { $push: { items: item }}, (err) => {
+                    if (err) socket.emit('ErrorItem', { 'error': 'Wasn´t possible to push the card in your hand' })
+                    else {
+                        Match.findOne({ _id: match._id }, (err, match) => {
+                            if(err) console.log(err)
+                            else {
+                                io.in(`${match.room}`).emit('MatchInfo', match)
+                            }
+                        })
+                    }
+                })
             }
         })
     })
