@@ -34,13 +34,13 @@ const Match = mongoose.model('Match', new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Player'
     }],
-    round: {
+    round: [{
         round: Number,
         actions: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Action'
         }]
-    }
+    }]
 }))
 
 module.exports.Player = Player
