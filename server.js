@@ -21,7 +21,6 @@ io.on('connection', (socket) => {
                     socket.emit('InfoUser', player)
                     Lobby.create(
                         {
-                            players: 1,
                             playersData: [player],
                             host: player,
                             room: crypto.createHash('md5').update(`${Date.now()}${socket.id}`).digest("hex").substr(0, 6).toUpperCase()
