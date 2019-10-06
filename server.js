@@ -1,5 +1,6 @@
 const server = require('http').createServer()
 const mongoose = require('mongoose')
+const crypto = require('crypto')
 const { Player, Lobby, Action, Match, Item } = require('./models')
 
 mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useUnifiedTopology: true})
@@ -21,7 +22,8 @@ io.on('connection', (socket) => {
                     Lobby.create(
                         {
                             playersData: [player],
-                            host: player
+                            host: player,
+                            room: crypto.createHash('md5').update(`${Date.now()}${socket.id}`).digest("hex").substr(0, 6).toUpperCase()
                         }, (err, lobby) => {
                             if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                             else {
@@ -36,7 +38,7 @@ io.on('connection', (socket) => {
     })
     
     socket.on('JoinRoom', (data) => {
-        Lobby.where({ _id: data._id }).findOne((err, lobby) => {
+        Lobby.where({ room: data.room }).findOne((err, lobby) => {
             if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
             else {
                 if (lobby.players >= 4) {
@@ -87,6 +89,9 @@ io.on('connection', (socket) => {
                         if (err) socket.emit('ErrorStarting', { 'error': 'Error when you tried to start game!'})
                         else {
                             io.in(`${match.room}`).emit('MatchInfo', match)
+                            Lobby.deleteOne({ _id: lobby._id }, (err) => {
+                                if (err) console.log(err)
+                            })
                         }
                     }
                 )
