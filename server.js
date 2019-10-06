@@ -21,6 +21,7 @@ io.on('connection', (socket) => {
                     socket.emit('InfoUser', player)
                     Lobby.create(
                         {
+                            players: 1,
                             playersData: [player],
                             host: player,
                             room: crypto.createHash('md5').update(`${Date.now()}${socket.id}`).digest("hex").substr(0, 6).toUpperCase()
@@ -41,7 +42,7 @@ io.on('connection', (socket) => {
         Lobby.where({ room: data.room }).findOne((err, lobby) => {
             if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
             else {
-                if (lobby.playersData.length >= 4) {
+                if (lobby.players >= 4) {
                     socket.emit('ErrorLobby',  { 'error': 'Sorry, but the lobby is full of players' })
                 } else {
                     Player.create(
@@ -71,7 +72,7 @@ io.on('connection', (socket) => {
     socket.on('StartGame', (data) => {
         Lobby.where({ _id: data._id }).findOne((err, lobby) => {
             if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to start the game' })
-            else if (lobby.playersData.length < 4) {
+            else if (lobby.players < 4) {
                 socket.emit('ErrorLobby', { 'error': 'Sorry, theresn´t enough players to start the game' })
             } else {
                 Match.create(
