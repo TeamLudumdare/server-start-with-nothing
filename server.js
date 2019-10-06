@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
                 Match.create(
                     {
                         players: lobby.playersData,
-                        round: [{
+                        rounds: [{
                             round: 1,
                             turns: [{
                                 turn: 0,
