@@ -1,24 +1,21 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-const player = new mongoose.Schema({
+const Player = mongoose.model('Player', new mongoose.Schema({
     lifePoints: Number,
     name: String
-});
+}));
 
-const lobby = new mongoose.Schema({
+const Lobby = mongoose.model('Lobby', new mongoose.Schema({
     players: Number,
-    playersData: [player],
-    host: player
-});
-
-function Player () {
-    return player
-}
-
-function Lobby () {
-    return lobby
-}
+    playersData: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Player'
+    }],
+    host: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Player'
+    }
+}));
 
 module.exports.Player = Player
-
 module.exports.Lobby = Lobby

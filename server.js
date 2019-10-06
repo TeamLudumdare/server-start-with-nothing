@@ -11,30 +11,29 @@ const io = require('socket.io')(server, {
 io.on('connection', (socket) => {
 
     socket.on('CreateRoom', (data) => {
-        console.log(data)
-        let player = new Player(
+        Player.create(
             {
                 name: data.nome,
                 lifePoints: 100
+            }, (err, player) => {
+                if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
+                else {
+                    socket.emit('InfoUser', player)
+                    let lobby = new Lobby(
+                        {
+                            players: 1,
+                            playersData: [player],
+                            host: player
+                        }
+                    ).save((err) => {
+                        if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
+                        else {
+                            socket.emit('InfoLobby', lobby)
+                        }
+                    })
+                }
             }
-        ).save((err) => {
-            if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
-            else {
-                socket.emit('InfoUser', player)
-                let lobby = new Lobby(
-                    {
-                        players: 1,
-                        playersData: [player],
-                        host: player
-                    }
-                ).save((err) => {
-                    if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
-                    else {
-                        socket.emit('InfoLobby', lobby)
-                    }
-                })
-            }
-        })
+        )
     })
     
     socket.on('JoinRoom', (data) => {
