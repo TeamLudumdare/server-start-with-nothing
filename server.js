@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
     })
     
     socket.on('JoinRoom', (data) => {
-        query = Lobby.where({ _id: data.id }).findOne((err, lobby) => {
+        query = Lobby.where({ _id: data._id }).findOne((err, lobby) => {
             if (err) socket.emit('ErrorLobby', { 'error': 'Sorry, it wasn´t possible to enter on lobby' })
             else {
                 if (lobby.playersData.length >= 4) {
@@ -48,17 +48,17 @@ io.on('connection', (socket) => {
                             name: data.nome,
                             lifePoints: 100
                         }
-                    ).save((err, player) => {
+                    ), (err, player) => {
                         if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                         else {
                             lobby.playersData.push(player).save((err) => {
                                 if (err) socket.emit('ErrorLobby',  { 'error': 'Sorry, it wasn´t possible to create a lobby' })
                                 else {
-                                    socket.emit('SuccessEnteringLobby', {})
+                                    socket.emit('InfoLobby', lobby)
                                 }
                             })
                         }
-                    })
+                    }
                 }
             }
         })
